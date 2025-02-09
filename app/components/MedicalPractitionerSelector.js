@@ -125,15 +125,23 @@ const MedicalPractitionerSelector = () => {
 
   // Handle form submission
   const handleSubmit = () => {
-    const formData = {
-      mainCategory: selectedMainCategory,
-      subCategory: selectedSubCategory,
-      rank: selectedRank,
-      experience,
-      contagionAllowance
-    };
     setShowSalaryCalculation(true);
   };
+
+  if (showSalaryCalculation) {
+    return (
+      <SalaryCalculation
+        formData={{
+          mainCategory: selectedMainCategory,
+          subCategory: selectedSubCategory,
+          rank: selectedRank,
+          experience,
+          contagionAllowance
+        }}
+        onBack={() => setShowSalaryCalculation(false)}
+      />
+    );
+  }
 
   if (showSalaryCalculation) {
     return (
