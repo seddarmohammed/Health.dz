@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Loader2, ChevronRight, ChevronLeft } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 const MedicalPractitionerSelector = () => {
   const [categories, setCategories] = useState([]);
@@ -25,13 +26,31 @@ const MedicalPractitionerSelector = () => {
   const [selectedMainCategory, setSelectedMainCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [selectedRank, setSelectedRank] = useState("");
+  const [experience, setExperience] = useState("");
+  const [contagionAllowance, setContagionAllowance] = useState("");
+
+  const CONTAGION_ALLOWANCE_OPTIONS = [
+    { value: "0", label: "0" },
+    { value: "2500", label: "2,500" },
+    { value: "4000", label: "4,000" },
+    { value: "5800", label: "5,800" },
+    { value: "7200", label: "7,200" },
+  ];
 
   // Check if current step selections are complete
   const isStepOneComplete = selectedMainCategory &&
     (subCategories.length === 0 || selectedSubCategory ||
       (subCategories.length === 1 && subCategories[0].subCategory === selectedMainCategory));
 
-  const isStepTwoComplete = selectedRank;
+  const isStepTwoComplete = experience !== "" && contagionAllowance !== "";
+
+  // Handle experience input
+  const handleExperienceChange = (e) => {
+    const value = e.target.value;
+    if (value === "" || (Number(value) >= 0 && Number(value) <= 12)) {
+      setExperience(value);
+    }
+  };
 
   // Fetch main categories on component mount
   useEffect(() => {
@@ -165,7 +184,7 @@ const MedicalPractitionerSelector = () => {
                   </Select>
                 </div>
 
-                {/* Sub Category Selection - Only show if subcategories exist */}
+                {/* Sub Category Selection */}
                 {subCategories.length > 0 && subCategories[0].subCategory !== selectedMainCategory && (
                   <div className="space-y-3">
                     <Label htmlFor="subCategory" className="text-lg font-semibold text-gray-900">
@@ -196,41 +215,90 @@ const MedicalPractitionerSelector = () => {
                     </Select>
                   </div>
                 )}
+
+                {/* Rank Selection */}
+                {ranks.length > 0 && (
+                  <div className="space-y-3">
+                    <Label htmlFor="rank" className="text-lg font-semibold text-gray-900">
+                      الدرجة
+                    </Label>
+                    <Select
+                      value={selectedRank}
+                      onValueChange={setSelectedRank}
+                      disabled={isLoading.ranks}
+                    >
+                      <SelectTrigger id="rank" className="w-full text-right h-12">
+                        <SelectValue placeholder="اختر الدرجة" />
+                        {isLoading.ranks && (
+                          <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                        )}
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ranks.map((rank) => (
+                          <SelectItem
+                            key={rank.rank}
+                            value={rank.rank}
+                            className="text-right"
+                          >
+                            {rank.rank}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="space-y-8">
-                {/* Display selected values from step 1 */}
-                <div className="bg-gray-50 p-4 rounded-lg">
+                {/* Summary of Step 1 */}
+                <div className="bg-gray-50 p-4 rounded-lg space-y-2">
                   <p className="text-gray-600">التصنيف الرئيسي: <span className="font-semibold text-gray-900">{selectedMainCategory}</span></p>
                   {selectedSubCategory && (
-                    <p className="text-gray-600 mt-2">التصنيف الفرعي: <span className="font-semibold text-gray-900">{selectedSubCategory}</span></p>
+                    <p className="text-gray-600">التصنيف الفرعي: <span className="font-semibold text-gray-900">{selectedSubCategory}</span></p>
+                  )}
+                  <p className="text-gray-600">الدرجة: <span className="font-semibold text-gray-900">{selectedRank}</span></p>
+                </div>
+
+                {/* Professional Experience Input */}
+                <div className="space-y-3">
+                  <Label htmlFor="experience" className="text-lg font-semibold text-gray-900">
+                    الخبرة المهنية (بالسنوات)
+                  </Label>
+                  <Input
+                    id="experience"
+                    type="number"
+                    min="0"
+                    max="12"
+                    value={experience}
+                    onChange={handleExperienceChange}
+                    className="text-right h-12"
+                    placeholder="أدخل سنوات الخبرة (0-12)"
+                  />
+                  {experience !== "" && (Number(experience) < 0 || Number(experience) > 12) && (
+                    <p className="text-red-500 text-sm">يجب أن تكون الخبرة بين 0 و 12 سنة</p>
                   )}
                 </div>
 
-                {/* Rank Selection */}
+                {/* Contagion Allowance Selection */}
                 <div className="space-y-3">
-                  <Label htmlFor="rank" className="text-lg font-semibold text-gray-900">
-                    الدرجة
+                  <Label htmlFor="contagionAllowance" className="text-lg font-semibold text-gray-900">
+                    منحة العدوى
                   </Label>
                   <Select
-                    value={selectedRank}
-                    onValueChange={setSelectedRank}
-                    disabled={isLoading.ranks}
+                    value={contagionAllowance}
+                    onValueChange={setContagionAllowance}
                   >
-                    <SelectTrigger id="rank" className="w-full text-right h-12">
-                      <SelectValue placeholder="اختر الدرجة" />
-                      {isLoading.ranks && (
-                        <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-                      )}
+                    <SelectTrigger id="contagionAllowance" className="w-full text-right h-12">
+                      <SelectValue placeholder="اختر قيمة منحة العدوى" />
                     </SelectTrigger>
                     <SelectContent>
-                      {ranks.map((rank) => (
+                      {CONTAGION_ALLOWANCE_OPTIONS.map((option) => (
                         <SelectItem
-                          key={rank.rank}
-                          value={rank.rank}
+                          key={option.value}
+                          value={option.value}
                           className="text-right"
                         >
-                          {rank.rank}
+                          {option.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -263,7 +331,13 @@ const MedicalPractitionerSelector = () => {
               )}
               {currentStep === 2 && (
                 <Button
-                  onClick={() => console.log('Submit')}
+                  onClick={() => console.log({
+                    mainCategory: selectedMainCategory,
+                    subCategory: selectedSubCategory,
+                    rank: selectedRank,
+                    experience,
+                    contagionAllowance
+                  })}
                   className="flex items-center gap-2 mr-auto"
                   disabled={!isStepTwoComplete}
                 >
