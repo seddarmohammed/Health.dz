@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import SalaryCalculation from "./SalaryCalculation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
@@ -13,6 +14,7 @@ import { Loader2, ChevronRight, ChevronLeft } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 const MedicalPractitionerSelector = () => {
+  const [showSalaryCalculation, setShowSalaryCalculation] = useState(false);
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [ranks, setRanks] = useState([]);
@@ -120,6 +122,33 @@ const MedicalPractitionerSelector = () => {
       fetchRanks(selectedMainCategory, value);
     }
   };
+
+  // Handle form submission
+  const handleSubmit = () => {
+    const formData = {
+      mainCategory: selectedMainCategory,
+      subCategory: selectedSubCategory,
+      rank: selectedRank,
+      experience,
+      contagionAllowance
+    };
+    setShowSalaryCalculation(true);
+  };
+
+  if (showSalaryCalculation) {
+    return (
+      <SalaryCalculation
+        formData={{
+          mainCategory: selectedMainCategory,
+          subCategory: selectedSubCategory,
+          rank: selectedRank,
+          experience,
+          contagionAllowance
+        }}
+        onBack={() => setShowSalaryCalculation(false)}
+      />
+    );
+  }
 
   // Handle navigation
   const handleNext = () => {
@@ -331,17 +360,11 @@ const MedicalPractitionerSelector = () => {
               )}
               {currentStep === 2 && (
                 <Button
-                  onClick={() => console.log({
-                    mainCategory: selectedMainCategory,
-                    subCategory: selectedSubCategory,
-                    rank: selectedRank,
-                    experience,
-                    contagionAllowance
-                  })}
+                  onClick={handleSubmit}
                   className="flex items-center gap-2 mr-auto"
                   disabled={!isStepTwoComplete}
                 >
-                  إرسال
+                  حساب الراتب
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
               )}
