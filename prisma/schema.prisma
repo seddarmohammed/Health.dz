@@ -1,0 +1,39 @@
+// prisma\schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model MedicalPractitioner {
+  id                                      Int     @id @default(autoincrement())
+  mainCategory                            String
+  subCategory                             String
+  rank                                    String
+  class                                   String?
+  pedagogicalActivitySupport              Float?
+  pedagogicalDocumentationSupport         Float?
+  pedagogicalExperienceSupport            Float?
+  documentationSupport                    Float?
+  mandatoryDoseMeasurement                Float?
+  mandatoryServiceType                    Float?
+  psychologicalSupport                    Float?
+  specializedTreatmentMandatory           Float?
+  inspectionAndControl                    Float?
+  healthActivitySupport                   Float?
+  framing                                 Float?
+  rehabilitation                          Float?
+  anesthesiaAndResuscitationSupport       Float?
+  mandatoryAnesthesiaAndResuscitation     Float?
+  motherAndChildHealthSupport             Float?
+  mandatoryObstetricAndReproductiveHealth Float?
+  paramedicalActivitySupport              Float?
+  mandatoryParamedical                    Float?
+  technical                               Float?
+  performanceImprovementAllowance         Float?
+}
